@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        body {
+            padding-top: 4.5rem;
+            background-color:#111111;
+        }
+
+        main > .container {
+            padding: 10px 5px 0;
+            width:100%;
+            min-width: 95%;
+        }
+
+        .footer {
+            color:#ffffff;
+        background-color: #111111;
+        }
+
+        .footer > .container {
+        padding-right: 15px;
+        padding-left: 15px;
+        }
+
+       table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .media {
+            width: 5em;
+            height: 5em;
+            display: inline-block;
+        }
+        .thumb_video {
+        border-top: green 5px solid;
+        }
+        .thumb_video:hover {
+            box-shadow: 0 0 10px 10px rgba(0, 255, 0,1);
+        }
+         .thumb_photo {
+        border-top: red 5px solid;
+        }
+        .thumb_photo:hover {
+            box-shadow: 0 0 10px 10px rgba(255, 0, 0,1);
+        }
+         .media img{
+            width:100%;
+             height:100%;
+        }
+        #livewall {
+            width:45em;
+            overflow:auto;
+            height:90vh;
+             direction:ltr;
+              float:left;
+
+        }
+       #detail {
+            width:45em;
+            overflow:auto;
+
+             float:right;
+            color:#ffffff;
+
+        }
+        #detail p {
+        line-height: 1;
+        padding:5px;
+        }
+        .media-detail-display {
+            max-height: 50%;
+            max-width : 80%;
+
+        }
+
+
+    </style>
+    <meta charset="UTF-8">
+    <title>Mediamur :: Flow </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+<header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">Mediamur</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/ui/index.html">Image Wall (Flow)</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/ui/index.stack.html">Image Wall (Stack)</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/ui/tv.html">TV</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/ui/configuration.html">Configuration</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<div id="livewall"></div>
+<div id="detail"  v-if="media !== undefined">
+<div id="media-display-wrapper">
+        <img v-if="type === 'photo'" class="media-detail-display" v-bind:src="media['media']['mediaURLHttps']" />
+        <video v-for="item in getVideos(media)" :src="item['url']" id="videoElement" v-if="type === 'video'" width="600" height="400" controls autoplay>
+            <source   v-if="type === 'video'" :src="item['url']" :type="item['contentType']">
+        </video>
+</div>
+    <p> <img align="middle" v-bind:src="media['status']['user']['biggerProfileImageURLHttps']" /> @{{media['status']['user']['screenName']}} -  {{media['status']['user']['name']}}</p>
+        <p>  {{ media['status']['text'] }} </p>
+
+
+</div>
+<script>
+var detail = new Vue({
+  el: '#detail',
+  data: {
+    media: undefined,
+    type : undefined,
+    videos : []
+  },
+  methods: {
+     getVideos : function(data){
+        var ret;
+        var maxBitrate =0;
+        for(k in data['media']['videoVariants']) {
+            if(data['media']['videoVariants'][k]['bitrate'] >= maxBitrate ) {
+             maxBitrate = data['media']['videoVariants'][k]['bitrate']
+             ret = data['media']['videoVariants'][k]
+            }
+        }
+        return [ret]
+     }
+  }
+
+})
+var medias= {}
+
+    var source = new EventSource("/stream/media");
+source.onmessage = function(event) {
+
+};
+
+
+function display_detail(id,type){
+   detail.type= type
+   detail.media = medias[id]
+
+
+}
+
+source.addEventListener("photo", function(e) {
+        var data = JSON.parse(e.data)
+        if(medias[data['media']['id']] === undefined ) {
+            medias[data['media']['id']] = data
+            var div = document.createElement("div");
+            var el = document.getElementById("livewall");
+            media = document.createElement("img");
+            media.src = data['media']['mediaURLHttps']
+            div.classList.add("media");
+            div.classList.add("animated");
+            div.classList.add("fadeInLeft");
+            div.classList.add("thumb_photo");
+            // media.id = data.hashkey
+            // media.type = data.type
+            // media.onclick = display_details
+            // media.className = data.media_type
+            div.prepend(media)
+            div.id = data['media']['id']
+            div.onclick = function() { display_detail(data['media']['id'],'photo') ; }
+
+            el.prepend(div)
+        }
+}, false);
+
+source.addEventListener("video", function(e) {
+
+        var data = JSON.parse(e.data)
+        if(medias[data['media']['id']] === undefined ) {
+            medias[data['media']['id']] = data
+            var div = document.createElement("div");
+            var el = document.getElementById("livewall");
+            media = document.createElement("img");
+            media.src = data['media']['mediaURLHttps']
+            div.classList.add("media");
+            div.classList.add("animated");
+            div.classList.add("fadeInLeft");
+            div.classList.add("thumb_video");
+
+            div.prepend(media)
+            div.id = data['media']['id']
+            /* var media_url = undefined
+            for( var k in data['media']['videoVariants']) {
+                    if( data['media']['videoVariants'][k]['contentType'] === 'application/x-mpegURL' ){
+                    media_url = data['media']['videoVariants'][k]['contentType']
+                    }
+            }*/
+            div.onclick = function() {
+            if(document.getElementById("videoElement") !== null) {
+                document.getElementById("videoElement").pause();
+                detail.media = [];
+            }
+
+            display_detail(data['media']['id'],'video') ;
+            }
+
+            el.prepend(div)
+        }
+}, false);
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+akka {
+  http {
+    server {
+      host = "0.0.0.0"
+      port = 48099
+    }
+    client {
+      parsing {
+        max-content-length = 83886080
+      }
+    }
+  }
+  # loglevel = "DEBUG"
+}
+mediamur {
+  # Twitter App info, if oyu don't have go to https://developer.twitter.com/en/apps and create an app.
+  # If you already have one (like for Twitter Streaming Importer) you can reuse it, but you won't be able to use the 2
+  # scripts it at the same time
+  twitter {
+    consumer_key = ""
+    consumer_secret = ""
+    access_token = ""
+    access_token_secret = ""
+  }
+
+  # What are the words mediamur should track in real time
+  query {
+    track = [""]
+  }
+
+  # Use the sample stream, which is a sample of all tweet in real time
+  sampleStream = false
+
+  # Should it save all the tweet and media
+  recordActive = false
+}

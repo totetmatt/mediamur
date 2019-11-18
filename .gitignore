@@ -1,0 +1,5 @@
+target/
+.idea/
+Test.sc
+conf/application.conf
+application.conf
