@@ -39,10 +39,13 @@ You will need to create a Twitter API Application Key https://developer.twitter.
 * Run `bin/mediamur` (or windows `bin\mediamur.bat`) and go to http://localhost:48080/ui/index.html
 ## Example
 ### Media Flow
+https://youtu.be/4LMWtduAhgE
 Each new media is append on the top. You can click to see it.
 ### Media Stack
+https://youtu.be/Qe5Kyz_bzfs
 Each media is getting stack per number of time it has been seen.
 ### TV & Hashcloud
+https://youtu.be/6phDxLYHZ9k
 Will play automatically each video 1 by 1 by date Mediamur receive it and make a hashtag co-occurence cloud. 
 Each hashtag can be clicked to display video under this hashtag.
 
