@@ -36,7 +36,8 @@ You will need to create a Twitter API Application Key https://developer.twitter.
       recordActive = false
     ```
     
-* Run `bin/mediamur` (or windows `bin\mediamur.bat`) and go to http://localhost:48080/ui/index.html
+* With a console, go to `cd $PATH_WHERE_YOU_UNZIP/mediamur-0.1/` and run `bin/mediamur` (or windows `bin\mediamur.bat`) 
+* Open a web browser to `http://localhost:48099/`
 ## Example
 ### Media Flow
 https://youtu.be/4LMWtduAhgE
