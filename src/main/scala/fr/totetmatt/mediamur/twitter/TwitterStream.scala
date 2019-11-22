@@ -83,12 +83,11 @@ class TwitterStream(implicit materializer:ActorMaterializer) {
     if(isRunning) {
       stopStream()
     }
-    this.searchQuery = searchQuery
-   if(searchQuery.isEmpty) {
-      if(sampleStream) {
-        twitterStream.sample()
-      }
+
+    if(sampleStream) {
+      twitterStream.sample()
     } else {
+      this.searchQuery = searchQuery
       twitterStream.filter(searchQuery:_*)
     }
     isRunning = true
